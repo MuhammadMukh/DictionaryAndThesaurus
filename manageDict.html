@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Manager</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #wordDetails {
+            display: none;
+            margin-top: 20px;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        button.copy-btn {
+            background-color: #008CBA;
+        }
+
+        button.copy-btn:hover {
+            background-color: #005684;
+        }
+
+        button.manage-btn {
+            background-color: #4caf50;
+        }
+
+        button.manage-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Word List</h1>
+        <h2>This is a list of words you have searched for</h2>
+        <ul id="wordList"></ul>
+    </div>
+    <div class="container">
+        <h1>Word Details</h1>
+        <h2>Access word details here</h2>
+        <center>
+            <!-- Replace the "Access Word" button with a file input -->
+            <input type="file" id="fileInput" accept=".txt"><br>
+            <input type="text" id="definitionInput" placeholder="Enter a definition"><br>
+            <button onclick="goToPreviousPage()">Previous Page</button>
+            <button onclick="refreshPage()">Refresh Page</button>
+            <button onclick="saveToFile()">Save to File</button>
+            <button onclick="deleteFile()">Delete File</button>
+            <button onclick="updateFile()">Update File</button>
+        </center><br>
+        <div id="wordDetails" style="display: none;">
+            <h3 id="word"></h3>
+            <p id="definitions"></p>
+            <p id="synonyms"></p>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script>
+        function goToPreviousPage() {
+            window.location.href = 'index.html';
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        function saveToFile() {
+            const definition = document.getElementById("definitionInput").value;
+
+            // Read the contents of the selected file
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const fileContents = e.target.result;
+                    const contentToSave = `Word: ${file.name}\nDefinition: ${definition}\nFile Contents:\n${fileContents}`;
+
+                    // Create a Blob with the data
+                    const blob = new Blob([contentToSave], { type: 'text/plain' });
+
+                    // Create a download link
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = 'word_definition.txt';
+
+                    // Append the link to the body
+                    document.body.appendChild(downloadLink);
+
+                    // Trigger the click event
+                    downloadLink.click();
+
+                    // Remove the link from the body
+                    document.body.removeChild(downloadLink);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function deleteFile() {
+            // Implement logic to delete the saved file
+            alert('File deleted. Implement your delete logic here.');
+        }
+
+        function updateFile() {
+            // Trigger the click event of the file input to prompt user to choose a file
+            document.getElementById("fileInput").click();
+        }
+
+        // Function to handle file input change
+        document.getElementById("fileInput").addEventListener("change", function () {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+
+            if (file) {
+                // Read the contents of the file
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const fileContents = e.target.result;
+                    displayFileContents(fileContents);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function displayFileContents(fileContents) {
+            // Implement logic to display file contents
+            alert('File contents:\n' + fileContents);
+        }
+    </script>
+</body>
+</html>

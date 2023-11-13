@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dictionary Application</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    input {
+      width: 70%;
+      padding: 10px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #wordDetails {
+      display: none;
+      margin-top: 20px;
+    }
+
+    h2, h3 {
+      color: #333;
+    }
+
+    p {
+      color: #555;
+    }
+
+    button.copy-btn {
+      background-color: #008CBA;
+    }
+
+    button.copy-btn:hover {
+      background-color: #005684;
+    }
+
+    button.manage-btn {
+      background-color: #4caf50;
+    }
+
+    button.manage-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to the Dictionary Application</h1>
+    <h2>Enter a word here</h2>
+    <div>
+      <input type="text" id="wordInput" placeholder="Enter a word">
+      <button onclick="searchWord()">Search</button>
+      <button onclick="goToManageDictionary()" class="manage-btn">Manage Dictionary</button>
+    </div>
+    <div id="wordDetails">
+      <h2 id="word"></h2>
+      <p id="definitions"></p>
+      <p id="synonyms"></p>
+      <button onclick="copyDefinition()" class="copy-btn">Copy Definition</button>
+    </div>
+  </div>
+  <script src="main.js"></script>
+  <script>
+    function searchWord() {
+      const wordInput = document.getElementById("wordInput");
+      const word = wordInput.value;
+      const dictionaryAPI = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
+
+      fetch(dictionaryAPI)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length > 0) {
+            const entry = data[0];
+            displayWordDetails(entry);
+          } else {
+            alert('No definitions found for the entered word.');
+            // Clear input field and hide word details
+            wordInput.value = '';
+            document.getElementById("wordDetails").style.display = "none";
+          }
+        })
+        .catch(error => {
+          alert('Error fetching dictionary data: ' + error.message);
+          console.error('Error fetching dictionary data:', error);
+        });
+    }
+
+    function displayWordDetails(entry) {
+      document.getElementById("word").textContent = entry.word;
+
+      const wordDefinitions = entry.meanings.map(meaning => meaning.definitions[0].definition);
+      document.getElementById("definitions").textContent = `Definitions: ${wordDefinitions.join(', ')}`;
+
+      const wordSynonyms = entry.meanings.map(meaning => meaning.definitions[0].synonyms.join(', '));
+      document.getElementById("synonyms").textContent = `Synonyms: ${wordSynonyms.join(', ')}`;
+
+      document.getElementById("wordDetails").style.display = "block";
+    }
+
+    function copyDefinition() {
+      const definitionsText = document.getElementById("definitions").textContent;
+      navigator.clipboard.writeText(definitionsText);
+      alert("Definition copied to clipboard!");
+    }
+
+    function goToManageDictionary() {
+      window.location.href = 'manageDict.html';
+    }
+  </script>
+</body>
+</html>
